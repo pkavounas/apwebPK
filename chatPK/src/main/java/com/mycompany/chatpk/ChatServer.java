@@ -8,6 +8,7 @@ import static spark.Spark.*;
 
 public class ChatServer {
     public static void main(String[] args) {
+        staticFiles.location("static/");
         get("/hello", (req, res) -> "Hello World");
     }
 }
