@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-
+<html>
 <head>
     <title>PK Test Page</title>
+    <meta charset="UTF-8">
 </head>
 
 
 <body>
-
+<!--
     Please enter your name:
     <input id="myinput">
 <button onclick="action()">Hello!</button>
@@ -15,20 +16,17 @@
     <textarea id="result">
 Awaiting input
 
-    </textarea>
+    </textarea>//-->
+Number: <input id="num"><br>
+<button onclick="test()">Factorial</button><br>
+<button onclick="stressTest()">Stress Test</button><br>
+<textarea style="width:200px;height:200px;" id="output">
+          
 
-<script>
-    console.log("reached here");
-    var inputHandle = document.getElementById("myinput");
-    var resultHandle = document.getElementById("result");
+</textarea>
 
-function action(){
-    console.log("reached here")
-    var string = "Hello " + inputHandle.value+", I hope you have a great day";
-    resultHandle.value=string;
-}
-
-    console.log("finished parsing script");
+<script src="script.js">
 </script>
 
 </body>
+</html>
