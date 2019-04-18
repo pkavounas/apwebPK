@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package com.mycompany.chatpk;
-
+import java.util.ArrayList;
 import static spark.Spark.*;
 
 public class ChatServer {
@@ -12,9 +12,20 @@ public class ChatServer {
         staticFiles.location("static/");
         get("/hello", (req, res) -> "Hello World");
         get("/factorial", (req, res) -> factorial(req));
+        get("/login", (req, res) -> login(req));
+        get("/send"), (req, res) -> send(req));
+        ArrayList<String> messages = new ArrayList<String>();
+
     }
-    
+
+    public static String login(spark.Request req){
+        Context ctx = getCtx
+        ctx.name = req.queryParams("name");
+        return(ctx.name != null?"ok":"ew no")
+
+    }
     public static String factorial(spark.Request req){
+        verifyLoggedIn(req);
         int num;
     
         try{
@@ -29,6 +40,23 @@ public class ChatServer {
             res *= i;
         }
         return ""+ res;
+    }
+
+
+    public static void verifyLoggedIn(spark.Request req){
+        Context ctc = getCtx(req);
+        if(ctx.name==null){
+            halt(401, "Go Away");
+        }
+    }
+
+    public static Context getCtx(spark.Request req){
+        Context ctx = req.session().attribute("context");
+        if(ctx==null){
+            ctx = new Context();
+            req.session().attribute("context", ctx);
+        }
+        return ctx;
     }
 }
     

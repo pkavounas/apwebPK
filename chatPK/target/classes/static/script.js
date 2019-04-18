@@ -2,24 +2,13 @@ console.log("parsing script");
 var outputarea = document.getElementById("output");
 var inputfield = document.getElementById("num");
 
-function print(s){
-    outputarea.value += s +"\n";
-}
-function test(){
-factorial(inputfield.value);
-}
 
-function stressTest(){
-    var i = 0;
-    while (i++<100){
-        factorial(i);
-    }
-}
-function factorial(n){
+
+function xmlrequest(verb, url){
         var xhr = new XMLHttpRequest();
-    xhr.open("get", "http://localhost:4567/factorial?number="+n, false);
+    xhr.open(verb || "GET", url, true);
     xhr.onload = () => {
-        print("factorial(" +n+ ") is " + xhr.response);
+        print("xhr.response");
     }
     xhr.onerror = () =>{
         print("error:"+xhr.statusText);
@@ -27,6 +16,29 @@ function factorial(n){
     xhr.send();
  
 }
+
+
+
+// function to wrap request in a promise object - 
+function request(obj) {
+    return new Promise((resolve, reject) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open(obj.method || "GET", obj.url);
+
+        xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                resolve(xhr.response);
+            } else {
+                reject(xhr.statusText);
+            }
+        };
+        xhr.onerror = () => reject(xhr.statusText);
+
+        xhr.send(obj.body);
+    });
+};
+
+
 
 
 
