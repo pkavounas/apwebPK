@@ -19,7 +19,7 @@ function factorial(n){
         var xhr = new XMLHttpRequest();
     xhr.open("get", "http://localhost:4567/factorial?number="+n, false);
     xhr.onload = () => {
-        print("factorial("+n+") is " + xhr.response);
+        print("factorial(" +n+ ") is " + xhr.response);
     }
     xhr.onerror = () =>{
         print("error:"+xhr.statusText);
