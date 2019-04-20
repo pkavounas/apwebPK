@@ -38,7 +38,7 @@ function message(){
 
     request({url: "protected/putmessage", method: "PUT", body: t})
         .then(data =>{session = data;})
-        .catch(error =>{output("Error: " + error);})
+        .catch(error =>{output("Error: " + error);});
 }
 
 function login(){

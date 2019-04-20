@@ -19,7 +19,7 @@ public class ChatServer {
         get("/hello", (req, res) -> "Hello World");
         get("/shutdown", (req, res) -> {System.exit(0); return"";});
         
-        put("/protected/putmessage", (req, res) -> putmessage(req));
+        put("/protected/putmessage", (req, res) -> putMessage(req));
 
         get("/protected/getnewmessages", "application/json", (req, res) -> getNewMessages(req,res));
 
@@ -37,8 +37,8 @@ public class ChatServer {
     }
 
 
-    public static String putmessage(spark.Request req){
-        ContextClass context = getCtx(req.session());
+    public static String putMessage(spark.Request req){
+        ContextClass context = getCtx(req);
         msgs.add(req.session().attribute("username") + ":" + req.body());
         return req.session().id();
     }
@@ -48,7 +48,7 @@ public class ChatServer {
         ContextClass ctx = session.attribute("context");
         if(ctx==null){
             ctx = new ContextClass();
-            req.session().attribute("Context", ctx);
+            session.attribute("Context", ctx);
         }
         return ctx;
     }
@@ -65,7 +65,7 @@ public class ChatServer {
 
 
     public static Object getNewMessages(spark.Request req, spark.Response res){
-        ContextClass ctx = getCtx(req.session());
+        ContextClass ctx = getCtx(req);
         List<String> myMessages;
 
         synchronized(ctx){
