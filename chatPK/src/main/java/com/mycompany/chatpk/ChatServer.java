@@ -24,6 +24,46 @@ public class ChatServer {
         return(ctx.name != null?"ok":"ew no")
 
     }
+
+
+    public static void verifyLoggedIn(spark.Request req){
+        Context ctc = getCtx(req);
+        if(ctx.name==null){
+            halt(401, "Go Away");
+        }
+    }
+
+    public static String send(spark.Request req) {
+        verifyLoggedIn(req);
+        Context ctx = getCtx(req); 
+        
+        String message = req.queryParams(message); 
+        messages.add(message);
+
+        return "sent!";
+    }
+
+    public static String getNewMessages(spark.Request req){
+        verifyLoggedIn(req);
+        Context ctx = getCtx(req);
+        String update = String.join(",", messages); 
+        return update;
+        
+         
+    }
+
+
+    public static Context getCtx(spark.Request req){
+        Context ctx = req.session().attribute("context");
+        if(ctx==null){
+            ctx = new Context();
+            req.session().attribute("context", ctx);
+        }
+        return ctx;
+    }
+
+
+
     public static String factorial(spark.Request req){
         verifyLoggedIn(req);
         int num;
@@ -40,23 +80,6 @@ public class ChatServer {
             res *= i;
         }
         return ""+ res;
-    }
-
-
-    public static void verifyLoggedIn(spark.Request req){
-        Context ctc = getCtx(req);
-        if(ctx.name==null){
-            halt(401, "Go Away");
-        }
-    }
-
-    public static Context getCtx(spark.Request req){
-        Context ctx = req.session().attribute("context");
-        if(ctx==null){
-            ctx = new Context();
-            req.session().attribute("context", ctx);
-        }
-        return ctx;
     }
 }
     

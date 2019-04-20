@@ -1,5 +1,7 @@
 console.log("parsing script");
 var inputfield = document.getElementById("message");
+var outputArea = document.getElementById("outputAera")
+var username = document.getElementById("username")
 
 
 
@@ -38,6 +40,27 @@ function request(obj) {
         xhr.send(obj.body);
     });
 };
+
+function send() {
+    request({ url: "send?message=" + message.value, method: "GET" })
+        .then(data => {
+            outputArea.innerHTML += "<b>" + username.value + ":</b> " + data + " <hr>";
+        })
+        .catch(error => {
+            console.log("error: " + error);
+        });
+}
+
+
+function getNewMessages(n) {
+        request({url: "get?message="+n, method: "GET"})
+                .then(data => {
+                    print("Message:"+data);
+                })
+                .catch(error => {
+                    print("Error: " + error);
+                });
+    }
 
 
 
