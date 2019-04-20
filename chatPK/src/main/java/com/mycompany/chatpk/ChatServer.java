@@ -4,84 +4,90 @@
  * and open the template in the editor.
  */
 package com.mycompany.chatpk;
+
 import java.util.ArrayList;
+import java.util.List;
 import static spark.Spark.*;
 
 public class ChatServer {
+
+    static ArrayList<String> msgs;
+
     public static void main(String[] args) {
+        msgs = new ArrayList<>();
         staticFiles.location("static/");
         get("/hello", (req, res) -> "Hello World");
-        get("/factorial", (req, res) -> factorial(req));
+        get("/shutdown", (req, res) -> {System.exit(0); return"";});
+        
+        put("/protected/putmessage", (req, res) -> putmessage(req));
+
+        get("/protected/getnewmessages", "application/json", (req, res) -> getNewMessages(req,res));
+
+
         get("/login", (req, res) -> login(req));
-        get("/send"), (req, res) -> send(req));
-        ArrayList<String> messages = new ArrayList<String>();
+        before("/protected/*", (req, res) -> {
+            if (req.session().attribute("username")== null){
+                halt(401, "You can only send messages when logged in");
+            }
+        });
 
-    }
-
-    public static String login(spark.Request req){
-        Context ctx = getCtx
-        ctx.name = req.queryParams("name");
-        return(ctx.name != null?"ok":"ew no")
-
-    }
-
-
-    public static void verifyLoggedIn(spark.Request req){
-        Context ctc = getCtx(req);
-        if(ctx.name==null){
-            halt(401, "Go Away");
-        }
-    }
-
-    public static String send(spark.Request req) {
-        verifyLoggedIn(req);
-        Context ctx = getCtx(req); 
         
-        String message = req.queryParams(message); 
-        messages.add(message);
+       
 
-        return "sent!";
-    }
-
-    public static String getNewMessages(spark.Request req){
-        verifyLoggedIn(req);
-        Context ctx = getCtx(req);
-        String update = String.join(",", messages); 
-        return update;
-        
-         
     }
 
 
-    public static Context getCtx(spark.Request req){
-        Context ctx = req.session().attribute("context");
+    public static String putmessage(spark.Request req){
+        ContextClass context = getCtx(req.session());
+        msgs.add(req.session().attribute("username") + ":" + req.body());
+        return req.session().id();
+    }
+
+
+    public static ContextClass getCtx(spark.Request session){
+        ContextClass ctx = session.attribute("context");
         if(ctx==null){
-            ctx = new Context();
-            req.session().attribute("context", ctx);
+            ctx = new ContextClass();
+            req.session().attribute("Context", ctx);
         }
         return ctx;
     }
 
 
 
-    public static String factorial(spark.Request req){
-        verifyLoggedIn(req);
-        int num;
-    
-        try{
-            num = Integer.parseInt(req.queryParams("number"));
-        }catch(Exception e) {
-            return "parsing exception";
+
+
+    public static String login(spark.Request req){
+        req.session().attribute("username", req.body());
+        return req.body();
+
+    }
+
+
+    public static Object getNewMessages(spark.Request req, spark.Response res){
+        ContextClass ctx = getCtx(req.session());
+        List<String> myMessages;
+
+        synchronized(ctx){
+            synchronized(msgs){
+                myMessages = msgs.subList(ctx.numOfMessages, msgs.size());
+                ctx.numOfMessages = msgs.size();
+            }
         }
-        
-        
-        double res = 1;
-        for (int i = 1; i <= num; i++){
-            res *= i;
-        }
-        return ""+ res;
+        return myMessages;
     }
 }
-    
+
+class ContextClass{
+    int numOfMessages = 0;
+}
+
+
+
+
+
+
+
+
 
 
