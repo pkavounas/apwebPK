@@ -7,7 +7,7 @@ var message = document.getElementById("myMessage");
 
 
 
-// function to wrap request in a promise object - 
+// function to wrap request in a promise object 
 function request(obj) {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest();
@@ -25,6 +25,8 @@ function request(obj) {
         xhr.send(obj.body);
     });
 };
+
+//creates username prefix for messages (DOES NOT PROTECT OTHER FEATURES)
 function login() {
     request({ url: "/login?name=" + username.value, method: "GET" })
         .then(data => {
@@ -40,7 +42,7 @@ function login() {
             console.log("error: " + error);
         });
 }
-
+//sends message to server to put into array
 function send() {
     if (message.value !== undefined && message.value !== "") {
         request({ url: "/send?message=" + message.value, method: "PUT" })
@@ -55,7 +57,7 @@ function send() {
             });
     }
 }
-
+//retrieve all new messages
 function getNewMsgs() {
     var xhr = new XMLHttpRequest();
     xhr.open("get", "http://localhost:4567/getnewmessages", true);

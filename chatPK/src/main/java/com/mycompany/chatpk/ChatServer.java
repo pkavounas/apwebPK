@@ -38,20 +38,20 @@ public class ChatServer{
        
 
     }
-    
+ //
     public static String login(spark.Request req){
         Context ctx = getCtx(req);
         ctx.username = req.queryParams("name");
         return ("" + ((ctx.username != null && !ctx.username.equals(""))==true)); 
     }
-    
+ //sends message   
     public static String send(spark.Request req){
         verifyLoggedIn(req);
         Context ctx = getCtx(req);
         String message = req.queryParams("message");
         return message;
     }
-    
+//return a string of all new messages (NOT WORKING, ONLY RETRIEVES MOST RECENT MESSAGE)
     public static String getNewMessages(spark.Request req){
         verifyLoggedIn(req);
         Context ctx = getCtx(req);
@@ -64,7 +64,7 @@ public class ChatServer{
         return unread;
     }
 
-
+//login filter (NOT WORKING)
   public static void verifyLoggedIn(spark.Request req){
         Context ctx = getCtx(req);
         if (ctx.username == null) {
@@ -72,8 +72,7 @@ public class ChatServer{
         }
     }
     
-    //gives valid context for user
-    //creates one if needed
+//Gives User new Context 
     public static Context getCtx(spark.Request req) {
         Context ctx = req.session().attribute("context");
         if (ctx == null) {
@@ -84,6 +83,7 @@ public class ChatServer{
     }
 }
 
+//Context Class
 class Context{
     int numOfMessages = 0;
     public int lastRead = 0;
