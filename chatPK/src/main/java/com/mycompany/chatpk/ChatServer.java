@@ -8,79 +8,95 @@ package com.mycompany.chatpk;
 import java.util.ArrayList;
 import java.util.List;
 import static spark.Spark.*;
+   
 
-public class ChatServer {
 
-    static ArrayList<String> msgs;
 
+
+
+
+public class ChatServer{
+
+    
+    public static List<String> allMessages = new ArrayList<String>();
+    
     public static void main(String[] args) {
-        msgs = new ArrayList<>();
+        
         staticFiles.location("static/");
         get("/hello", (req, res) -> "Hello World");
-        get("/shutdown", (req, res) -> {System.exit(0); return"";});
         
-        put("/protected/putmessage", (req, res) -> putMessage(req));
+        
+        put("/send", (req, res) -> send(req));
 
-        get("/protected/getnewmessages", "application/json", (req, res) -> getNewMessages(req,res));
-
+        get("/getnewmessages",  (req, res) -> getNewMessages(req));
+        
 
         get("/login", (req, res) -> login(req));
-        before("/protected/*", (req, res) -> {
-            if (req.session().attribute("username")== null){
-                halt(401, "You can only send messages when logged in");
-            }
-        });
+        
 
         
        
 
     }
-
-
-    public static String putMessage(spark.Request req){
-        ContextClass context = getCtx(req);
-        msgs.add(req.session().attribute("username") + ":" + req.body());
-        return req.session().id();
+    
+    public static String login(spark.Request req){
+        Context ctx = getCtx(req);
+        ctx.username = req.queryParams("name");
+        return ("" + ((ctx.username != null && !ctx.username.equals(""))==true)); 
+    }
+    
+    public static String send(spark.Request req){
+        verifyLoggedIn(req);
+        Context ctx = getCtx(req);
+        String message = req.queryParams("message");
+        return message;
+    }
+    
+    public static String getNewMessages(spark.Request req){
+        verifyLoggedIn(req);
+        Context ctx = getCtx(req);
+        String unread = "";
+        List<String> temp = allMessages.subList(ctx.lastRead, allMessages.size());
+        ctx.lastRead = allMessages.size();
+        for (int i = 0; i < temp.size(); i++) {
+            unread += temp.get(i);
+    }
+        return unread;
     }
 
 
-    public static ContextClass getCtx(spark.Request session){
-        ContextClass ctx = session.attribute("context");
-        if(ctx==null){
-            ctx = new ContextClass();
-            session.attribute("Context", ctx);
+  public static void verifyLoggedIn(spark.Request req){
+        Context ctx = getCtx(req);
+        if (ctx.username == null) {
+            halt(404, "please enter a username");
+        }
+    }
+    
+    //gives valid context for user
+    //creates one if needed
+    public static Context getCtx(spark.Request req) {
+        Context ctx = req.session().attribute("context");
+        if (ctx == null) {
+            ctx = new Context();
+            req.session().attribute("context", ctx);
         }
         return ctx;
     }
-
-
-
-
-
-    public static String login(spark.Request req){
-        req.session().attribute("username", req.body());
-        return req.body();
-
-    }
-
-
-    public static Object getNewMessages(spark.Request req, spark.Response res){
-        ContextClass ctx = getCtx(req);
-        List<String> myMessages;
-
-        synchronized(ctx){
-            synchronized(msgs){
-                myMessages = msgs.subList(ctx.numOfMessages, msgs.size());
-                ctx.numOfMessages = msgs.size();
-            }
-        }
-        return myMessages;
-    }
 }
 
-class ContextClass{
+class Context{
     int numOfMessages = 0;
+    public int lastRead = 0;
+    String username;
+    
 }
+
+ 
+
+
+
+
+
 
 
 

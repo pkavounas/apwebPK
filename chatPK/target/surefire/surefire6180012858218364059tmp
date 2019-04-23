@@ -1,7 +1,0 @@
-#surefire
-#Thu Apr 18 14:12:32 PDT 2019
-maven.ext.class.path=C\:\\Program Files\\NetBeans 8.2\\java\\maven-nblib\\netbeans-eventspy.jar
-user.dir=C\:\\Users\\pkavounas\\Documents\\GitHub\\apwebPK\\chatPK
-file.encoding=UTF-8
-localRepository=C\:\\Users\\pkavounas\\.m2\\repository
-basedir=C\:\\Users\\pkavounas\\Documents\\GitHub\\apwebPK\\chatPK
