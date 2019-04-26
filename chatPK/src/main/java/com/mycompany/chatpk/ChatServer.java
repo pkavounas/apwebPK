@@ -7,6 +7,7 @@ package com.mycompany.chatpk;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import static spark.Spark.*;
    
 
@@ -18,7 +19,7 @@ import static spark.Spark.*;
 public class ChatServer{
 
     
-    public static List<String> allMessages = new ArrayList<String>();
+    public static ArrayList<String> allMessages = new ArrayList<String>();
     
     public static void main(String[] args) {
         
@@ -48,28 +49,36 @@ public class ChatServer{
     public static String send(spark.Request req){
         verifyLoggedIn(req);
         Context ctx = getCtx(req);
+        String user = ctx.username;   
         String message = req.queryParams("message");
-        return message;
+        String sent = user +": " + message;
+        allMessages.add(user +": " + message);
+        return sent;
     }
 //return a string of all new messages (NOT WORKING, ONLY RETRIEVES MOST RECENT MESSAGE)
     public static String getNewMessages(spark.Request req){
+        
         verifyLoggedIn(req);
         Context ctx = getCtx(req);
-        String unread = "";
-        List<String> temp = allMessages.subList(ctx.lastRead, allMessages.size());
-        ctx.lastRead = allMessages.size();
-        for (int i = 0; i < temp.size(); i++) {
-            unread += temp.get(i);
+
+        String unread ="";
+
+        for (int i = ctx.lastRead; i < allMessages.size(); i++) {
+            unread += " " + allMessages.get(i);
+       
     }
         return unread;
+    
     }
 
 //login filter (NOT WORKING)
   public static void verifyLoggedIn(spark.Request req){
         Context ctx = getCtx(req);
         if (ctx.username == null) {
-            halt(404, "please enter a username");
+           halt(404, "please enter a username");
         }
+        System.out.println("verified");
+        
     }
     
 //Gives User new Context 

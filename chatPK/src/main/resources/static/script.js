@@ -33,7 +33,6 @@ function login() {
             console.log(data);
             
             if (data == "true") {
-                output.innerHTML="Hello, " + username.value;
                 setInterval(getNewMsgs, 100);
                 
             }
@@ -47,7 +46,7 @@ function send() {
     if (message.value !== undefined && message.value !== "") {
         request({ url: "/send?message=" + message.value, method: "PUT" })
             .then(data => {
-                output.innerHTML= username.value + ": "+data;
+                output.innerHTML= data;
                 console.log(username.value + data);
         
                 
