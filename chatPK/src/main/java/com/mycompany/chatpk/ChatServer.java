@@ -57,7 +57,7 @@ public class ChatServer{
     }
 //return a string of all new messages (NOT WORKING, ONLY RETRIEVES MOST RECENT MESSAGE)
     public static String getNewMessages(spark.Request req){
-        
+         
         verifyLoggedIn(req);
         Context ctx = getCtx(req);
 
@@ -66,7 +66,9 @@ public class ChatServer{
         for (int i = ctx.lastRead; i < allMessages.size(); i++) {
             unread += " " + allMessages.get(i);
        
-    }
+    
+        } 
+          ctx.lastRead = allMessages.size(); 
         return unread;
     
     }
