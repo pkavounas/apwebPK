@@ -7,6 +7,7 @@ package com.mycompany.chatpk;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.MultipartConfigElement;
 
 import static spark.Spark.*;
    
@@ -30,7 +31,7 @@ public class ChatServer{
         put("/send", (req, res) -> send(req));
 
         get("/getnewmessages",  (req, res) -> getNewMessages(req));
-        
+        get("/getCtx", (req, res) -> getCtx(req));
 
         get("/login", (req, res) -> login(req));
         
@@ -42,35 +43,48 @@ public class ChatServer{
  //
     public static String login(spark.Request req){
         Context ctx = getCtx(req);
-        ctx.username = req.queryParams("name");
-        return ("" + ((ctx.username != null && !ctx.username.equals(""))==true)); 
+        ctx.username = req.queryParams("name"); 
+        ctx.lastRead = 0;
+        String result = ctx.username != null ? "ok" : "not nice"; 
+        System.out.println(ctx.username + "is verified");
+        return result;
     }
- //sends message   
+   
     public static String send(spark.Request req){
         verifyLoggedIn(req);
         Context ctx = getCtx(req);
-        String user = ctx.username;   
-        String message = req.queryParams("message");
-        String sent = user +": " + message;
-        allMessages.add(user +": " + message);
-        return sent;
+        MultipartConfigElement multipartConfigElement = new MultipartConfigElement(System.getProperty("java.io.tmpdir"));
+        req.raw().setAttribute("org.eclipse.jetty.multipartConfig",
+                multipartConfigElement);
+        
+        String message = req.queryParams("myMessage");
+        String name = ctx.username; 
+        String complete = name + ": " + message;
+        
+
+        synchronized(allMessages) {
+            allMessages.add(complete);
+        }
+        
+      
+
+        return message; 
+    
     }
 //return a string of all new messages (NOT WORKING, ONLY RETRIEVES MOST RECENT MESSAGE)
     public static String getNewMessages(spark.Request req){
          
-        verifyLoggedIn(req);
+    verifyLoggedIn(req);
         Context ctx = getCtx(req);
+        int lastRead = ctx.lastRead;
+        String newMsgs = null;
+        for (int i = lastRead; i < allMessages.size(); i++) {
+            newMsgs += allMessages.get(i) + "\n";
+        }
+        ctx.lastRead = allMessages.size(); //update their read messages
+        return newMsgs;
+        
 
-        String unread ="";
-
-        for (int i = ctx.lastRead; i < allMessages.size(); i++) {
-            unread += " " + allMessages.get(i);
-       
-    
-        } 
-          ctx.lastRead = allMessages.size(); 
-        return unread;
-    
     }
 
 //login filter (NOT WORKING)
@@ -86,6 +100,7 @@ public class ChatServer{
 //Gives User new Context 
     public static Context getCtx(spark.Request req) {
         Context ctx = req.session().attribute("context");
+        
         if (ctx == null) {
             ctx = new Context();
             req.session().attribute("context", ctx);
@@ -94,15 +109,7 @@ public class ChatServer{
     }
 }
 
-//Context Class
-class Context{
-    int numOfMessages = 0;
-    public int lastRead = 0;
-    String username;
-    
-}
 
- 
 
 
 

@@ -26,49 +26,50 @@ function request(obj) {
     });
 };
 
-//creates username prefix for messages (DOES NOT PROTECT OTHER FEATURES)
+
 function login() {
-    request({ url: "/login?name=" + username.value, method: "GET" })
-        .then(data => {
-            console.log(data);
-            
-            if (data == "true") {
+    
+    request({url: "login?name=" + name, method: "POST"})
+            .then(data => { 
+                print("hello " + name);
                 setInterval(getNewMsgs, 100);
-                
-            }
-        })
-        .catch(error => {
-            console.log("error: " + error);
-        });
+            })
+            .catch(error => {
+                print("Error: " + error);
+            });
 }
 //sends message to server to put into array
 function send() {
-    if (message.value !== undefined && message.value !== "") {
-        request({ url: "/send?message=" + message.value, method: "PUT" })
+     var data = new FormData(); 
+    
+    
+    data.append("message", message);
+
+    request({url: "send", method: "POST", body: data}) //try to send it back - calls the sendMsg in ChatServer.java
             .then(data => {
-                output.innerHTML= data;
-                console.log(username.value + data);
-        
-                
+                print(name + ": " + message + " (js)"); //will print if it works
             })
-            .catch(error => {
-                console.log("error: " + error);
+            .catch(error => { //say error if error
+                print("Error: " + error);
             });
-    }
+    
+
 }
+
+
 //retrieve all new messages
 function getNewMsgs() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("get", "http://localhost:4567/getnewmessages", true);
-    xhr.onload = () => {
-        
-        output.innerHTML += xhr.response;
-        console.log(xhr.response);
-    };
-    xhr.onerror = () => {
-        console.log("error: " + xhr.response);
-    };
-    xhr.send();
+    var data = new FormData();
+    request({url: "getNewMessages", method: "GET", body: data})
+            .then(data => {
+                print(data);
+            })
+            .catch(error => {
+                print("Error: " + error);
+            });
+}
+function print(s) {
+    output.innerHTML += "<p>" + s + "</p>"; 
 }
 
 
