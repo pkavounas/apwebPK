@@ -7,6 +7,7 @@ package com.mycompany.chatpk;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.MultipartConfigElement;
 
 import static spark.Spark.*;
@@ -30,7 +31,7 @@ public class ChatServer{
         
         put("/send", (req, res) -> send(req));
 
-        get("/getnewmessages",  (req, res) -> getNewMessages(req));
+        get("/getnewmessages", "application/json", (req, res) -> getNewMessages(req, res), new JSONRT());
         get("/getCtx", (req, res) -> getCtx(req));
 
         get("/login", (req, res) -> login(req));
@@ -72,20 +73,21 @@ public class ChatServer{
     
     }
 //return a string of all new messages (NOT WORKING, ONLY RETRIEVES MOST RECENT MESSAGE)
-    public static String getNewMessages(spark.Request req){
-         
-    verifyLoggedIn(req);
+  public static Object getNewMessages(spark.Request req, spark.Response res) {
         Context ctx = getCtx(req);
-        int lastRead = ctx.lastRead;
-        String newMsgs = null;
-        for (int i = lastRead; i < allMessages.size(); i++) {
-            newMsgs += allMessages.get(i) + "\n";
-        }
-        ctx.lastRead = allMessages.size(); //update their read messages
-        return newMsgs;
+        List<String> myMessages;
         
-
+        
+            synchronized (allMessages) {
+                myMessages = allMessages.subList(ctx.lastRead, allMessages.size());
+                ctx.lastRead = allMessages.size();
+            }
+        
+        return myMessages;
     }
+
+
+
 
 //login filter (NOT WORKING)
   public static void verifyLoggedIn(spark.Request req){
@@ -108,20 +110,3 @@ public class ChatServer{
         return ctx;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

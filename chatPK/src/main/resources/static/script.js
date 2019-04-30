@@ -62,8 +62,17 @@ function getNewMsgs() {
     var data = new FormData();
     request({url: "getNewMessages", method: "GET", body: data})
             .then(data => {
-                print(data);
-            })
+                let messages =  JSON.parse(data);
+          for (var i = 0; i < messages.length; i++) {
+                        let s = messages[i];
+			
+                   
+                        output(s + "<br>");
+                    }
+                })
+
+                
+           
             .catch(error => {
                 print("Error: " + error);
             });
