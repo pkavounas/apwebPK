@@ -41,7 +41,7 @@ public class ChatServer{
        
 
     }
- //
+ //takes username and puts it to context
     public static String login(spark.Request req){
         Context ctx = getCtx(req);
         ctx.username = req.queryParams("name"); 
@@ -50,7 +50,7 @@ public class ChatServer{
         System.out.println(ctx.username + "is verified");
         return result;
     }
-   
+   //join message and user and put to array
     public static String send(spark.Request req){
         verifyLoggedIn(req);
         Context ctx = getCtx(req);

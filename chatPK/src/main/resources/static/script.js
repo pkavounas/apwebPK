@@ -1,6 +1,5 @@
 console.log("parsing script");
-// var inputfield = document.getElementById("message");
-// var outputArea = document.getElementById("output")
+
 var username = document.getElementById("name");
 var output = document.getElementById("output");
 var message = document.getElementById("myMessage");
@@ -26,9 +25,8 @@ function request(obj) {
     });
 };
 
-
-function login() {
-    
+//login request, starts get new messages cycle if successful
+function login() {  
     request({url: "login?name=" + name, method: "POST"})
             .then(data => { 
                 print("hello " + name);

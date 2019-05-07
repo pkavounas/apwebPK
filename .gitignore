@@ -1,2 +1,4 @@
 
 *.jar
+/SQLiteTest/nbproject/private/
+/SQLiteTest/build/
