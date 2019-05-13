@@ -28,20 +28,30 @@ function request(obj) {
 
 
 function ask(){
-    request({url: "/dumpTable?tablename="+newInput.value, method: "GET"})
+    output.innerHTML ="";
+    request({url: "/dumpTable?tablename="+askName.value, method: "GET"})
             .then(data => { 
-                output.innerHTML = data;
-                console.log("asked");
-            })
-            .catch(error => {
-                print("Error: " + error);
-            });
+                if (data.length !== null) {
+                let res = JSON.parse(data);
+                console.log(res);
+
+                for (var i = 0; i < res.length; i++) {
+                    for (var j = 0; j < res[0].length; j++) {
+                        output.innerHTML += res[i][j] + " " + " | ";
+                    }
+                    output.innerHTML += "<br><hr>";
+                }
+            }
+        })
+        .catch(error => {
+            output.innerHTML += "Table "+askName.value+ " does not exist";
+        });
     
 }
 
 
 function test(){
-    request({url: "/test?tablename="+newInput.value, method: "GET"})
+    request({url: "/test?tablename="+askName.value, method: "GET"})
     
             .then(data => { 
                 output.innerHTML = data;

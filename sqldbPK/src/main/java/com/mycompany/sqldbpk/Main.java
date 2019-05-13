@@ -13,6 +13,11 @@ import java.util.ArrayList;
  * @author pkavounas
  */
 public class Main {
+    
+        
+    public final static int LENGTH = 50;
+    
+    
     public static void main(String[] args) {
         
         staticFiles.location("static/");
@@ -43,7 +48,7 @@ public class Main {
     }
     
     static Connection conn = null;
-     public static Object dumpTable(String tableName) {
+     public static Object[][] dumpTable(String tableName) {
 
         try {
             
@@ -65,12 +70,27 @@ public class Main {
             System.out.println("Rows:");
             
             
-            while (rs.next()) { // prints the id and first two columns of all rows
-                System.out.println(rs.getInt(1) + "  " + rs.getString(2) + "  " + rs.getString(3));
+
+            Object[][] res = new Object[LENGTH][numberOfColumns];
+            int counter = 0;
+            while (rs.next() && counter < LENGTH) { // prints the id and first two columns of all rows
+                //String row = "";
+                for (int j = 1; j <= numberOfColumns; j++) {
+                    /*if(rsmd.getColumnTypeName(j).equals("INTEGER")) {
+                        row += "" + rs.getInt(j);
+                    } else {
+                        row += "" + rs.getString(j);
+                    }*/
+                    res[counter][j-1] = rs.getString(j);
+                    //row += "" + rs.getString(j) + " ";
+                }
+                //System.out.println(row);
+                counter++;
             }
 
             //System.out.println();
-            return rs;
+            return res;
+           
         } catch (Exception e) {
             System.out.println(e);
         }
