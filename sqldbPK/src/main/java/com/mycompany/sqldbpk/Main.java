@@ -7,14 +7,14 @@ package com.mycompany.sqldbpk;
 
 import static spark.Spark.*;
 import java.sql.*;
-import java.util.ArrayList;
+
 /**
  *
  * @author pkavounas
  */
 public class Main {
     
-        
+        //SETS MAX DISPLAY LENGTH
     public final static int LENGTH = 50;
     
     
@@ -70,25 +70,15 @@ public class Main {
             System.out.println("Rows:");
             
             
-
+            //Creates new array of arrays and prints up to length (SEE TOP) and all columns
             Object[][] res = new Object[LENGTH][numberOfColumns];
             int counter = 0;
-            while (rs.next() && counter < LENGTH) { // prints the id and first two columns of all rows
-                //String row = "";
+            while (rs.next() && counter < LENGTH) {       
                 for (int j = 1; j <= numberOfColumns; j++) {
-                    /*if(rsmd.getColumnTypeName(j).equals("INTEGER")) {
-                        row += "" + rs.getInt(j);
-                    } else {
-                        row += "" + rs.getString(j);
-                    }*/
-                    res[counter][j-1] = rs.getString(j);
-                    //row += "" + rs.getString(j) + " ";
-                }
-                //System.out.println(row);
+                    res[counter][j-1] = rs.getString(j);                    
+                }              
                 counter++;
-            }
-
-            //System.out.println();
+            }           
             return res;
            
         } catch (Exception e) {

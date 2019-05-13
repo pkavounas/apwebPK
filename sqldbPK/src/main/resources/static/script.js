@@ -58,6 +58,7 @@ function test(){
                 console.log("asked");
             })
             .catch(error => {
+                output.innerHTML = "Connection Failed"
                 print("Error: " + error);
             });
     
